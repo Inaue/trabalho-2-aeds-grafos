@@ -32,7 +32,10 @@ typedef struct Info_bfs Info_bfs;
 struct Info_dfs {
 	int timestamp[2];
 	int visitado;
-	int predecessor;
+	int chega_no_fim;
+	int pred;
+	int distancia;
+	int prox;
 };
 typedef struct Info_dfs Info_dfs;
 
