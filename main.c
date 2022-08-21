@@ -42,9 +42,64 @@ typedef struct Info_dfs Info_dfs;
 int	main			(int argc, char** argv);
 void	grafo_bfs		(Lista** grafo, int total_vertices, int v_inicial, Info_bfs* resultado);
 int	grafo_dfs		(Lista** grafo, int total_vertices, int v_inicial, Info_dfs* resultado);
+int	grafo_maior_caminho		(Lista** grafo, int v_inicial, int v_final, Info_dfs* resultado);
 void	lst_print		(Lista* lst_imprimir);
 
 /*  *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   */
+
+int	grafo_maior_caminho		(Lista** grafo, int v_inicial, int v_final, Info_dfs* resultado)
+{
+	int tempo, demora = 0, maior_demora = 0;
+	Lista* v_adj;
+
+	tempo = resultado[v_inicial].timestamp[COMECO_BUSCA] + 1;
+	resultado[v_inicial].visitado = VERDADEIRO;
+
+	if (v_inicial == v_final)
+	{
+		resultado[v_inicial].chega_no_fim	= VERDADEIRO;
+		resultado[v_inicial].distancia		= 0;
+	}
+	else
+	{
+		for (v_adj = grafo[v_inicial]; v_adj != NULL; v_adj = v_adj->prox)
+		{
+			if (resultado[v_adj->info].chega_no_fim)
+			{
+				resultado[v_inicial].chega_no_fim = VERDADEIRO;
+				demora = resultado[v_adj->info].distancia;
+				
+				if (demora > maior_demora)
+				{
+					maior_demora = demora;
+					resultado[v_inicial].prox = v_adj->info;
+				}
+			}
+			else if (!resultado[v_adj->info].visitado)
+			{
+				resultado[v_adj->info].timestamp[COMECO_BUSCA] = tempo;
+				resultado[v_adj->info].pred = v_inicial;
+				tempo = grafo_maior_caminho(grafo, v_adj->info, v_final, resultado);
+
+				if (resultado[v_adj->info].chega_no_fim)
+				{
+					resultado[v_inicial].chega_no_fim = VERDADEIRO;
+					demora = resultado[v_adj->info].distancia;
+					
+					if (demora > maior_demora)
+					{
+						maior_demora = demora;
+						resultado[v_inicial].prox = v_adj->info;
+					}
+				}
+			}
+		}
+	}
+
+	resultado[v_inicial].distancia = maior_demora + 1;
+	resultado[v_inicial].timestamp[FIM_BUSCA] = tempo;
+	return tempo + 1;
+}
 
 int	grafo_dfs		(Lista** grafo, int total_vertices, int v_inicial, Info_dfs* resultado)
 {
