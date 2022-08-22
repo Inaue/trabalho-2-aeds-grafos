@@ -25,7 +25,7 @@
 /*	ESTRUTURAS	*/
 struct Info_dfs {
 	int visitado;
-	int chega_no_fim;
+	int chega_no_destino;
 	int distancia;
 	int prox;
 };
@@ -35,39 +35,46 @@ typedef struct Info_dfs Info_dfs;
 /*  *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   */
 
 int	main			(int argc, char** argv);
-void	grafo_maior_caminho	(Lista** grafo, int v_inicial, int v_final, Info_dfs* resultado);
+void	grafo_maior_caminho	(Lista** grafo, int v_visitar, int limite_passos, Info_dfs* resultado);
+void	grafo_ini_busca		(Info_dfs* resultado, int total_vertices, int v_destino);
 void	lst_print		(Lista* lst_imprimir);
 
 /*  *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   */
 
-void	grafo_maior_caminho	(Lista** grafo, int v_inicial, int v_final, Info_dfs* resultado)
+void	grafo_ini_busca		(Info_dfs* resultado, int total_vertices, int v_destino)
+{
+	int v;
+
+	resultado[v_destino].chega_no_destino	= VERDADEIRO;
+	resultado[v_destino].distancia		= 0;
+
+	for (v = 0; v < total_vertices; v++)
+		resultado[v].visitado = FALSO;
+}
+
+void	grafo_maior_caminho	(Lista** grafo, int v_visitar, int limite_passos, Info_dfs* resultado)
 {
 	int maior_distancia = DIST_PADRAO;
 	Lista* v_adj;
 
-	resultado[v_inicial].visitado = VERDADEIRO;
+	resultado[v_visitar].visitado = VERDADEIRO;
 
-	if (v_inicial == v_final)
-	{
-		resultado[v_inicial].chega_no_fim	= VERDADEIRO;
-		resultado[v_inicial].distancia		= 0;
-		return;
-	}
-	
-	for (v_adj = grafo[v_inicial]; v_adj != NULL; v_adj = v_adj->prox)
+	for (v_adj = grafo[v_visitar]; v_adj != NULL; v_adj = v_adj->prox)
 	{
 		if (!resultado[v_adj->info].visitado)
-			grafo_maior_caminho(grafo, v_adj->info, v_final, resultado);
+			grafo_maior_caminho(grafo, v_adj->info, limite_passos - 1, resultado);
 
-		if ((resultado[v_adj->info].chega_no_fim) && (resultado[v_adj->info].distancia > maior_distancia))
+		if (	(resultado[v_adj->info].chega_no_destino) &&
+			(resultado[v_adj->info].distancia > maior_distancia) &&
+			((resultado[v_adj->info].distancia + 1) < limite_passos)	)
 		{
-			resultado[v_inicial].chega_no_fim = VERDADEIRO;
-			maior_distancia = resultado[v_adj->info].distancia;
-			resultado[v_inicial].prox = v_adj->info;
+			resultado[v_visitar].chega_no_destino	= VERDADEIRO;
+			maior_distancia				= resultado[v_adj->info].distancia;
+			resultado[v_visitar].prox		= v_adj->info;
 		}
 	}
 
-	resultado[v_inicial].distancia = maior_distancia + 1;
+	resultado[v_visitar].distancia = maior_distancia + 1;
 }
 
 void	lst_print	(Lista* lst_imprimir)
@@ -95,7 +102,7 @@ int main(int argc, char** argv)
 {
 	Lista** grafo;
 	Info_dfs* resultado_busca_dfs;
-	int vertices, v, v1, v2, origem, destino, i, seed;
+	int vertices, v, v1, v2, origem, destino, limite, i, seed;
 
 	printf("GRAFO ORIENTADO\n");
 	printf("____________________________________________________________\n");
@@ -107,18 +114,14 @@ int main(int argc, char** argv)
 	scanf("%i", &origem);
 	printf("Digite o destino da busca:\n");
 	scanf("%i", &destino);
+	printf("Digite o limite de passos:\n");
+	scanf("%i", &limite);
 	srand(seed);
 	grafo = (Lista**)malloc(vertices * sizeof(Lista*));
 	resultado_busca_dfs = (Info_dfs*)malloc(vertices * sizeof(Info_dfs));
 
 	for (v = 0; v < vertices; v++)
-	{
 		grafo[v] = lst_cria();
-		resultado_busca_dfs[v].visitado			= FALSO;
-		resultado_busca_dfs[v].chega_no_fim		= FALSO;
-		resultado_busca_dfs[v].distancia		= DIST_PADRAO;
-		resultado_busca_dfs[v].prox			= NAO_PREENCHIDO;
-	}
 	
 	for (v1 = 0; v1 < vertices; v1++)
 	{
@@ -138,12 +141,17 @@ int main(int argc, char** argv)
 		lst_print(grafo[v]);
 	}
 
-	grafo_maior_caminho(grafo, origem, destino, resultado_busca_dfs);
+	grafo_ini_busca(resultado_busca_dfs, vertices, destino);
+	grafo_maior_caminho(grafo, origem, limite, resultado_busca_dfs);
 	printf("____________________________________________________________\n");
 	printf("CAMINHO MAIS LONGO DE %i A %i:\n", origem, destino);
+	v = origem;
+	printf("%i -> ", v);
 	
-	for (v = origem; v != NAO_PREENCHIDO; v = resultado_busca_dfs[v].prox)
+	do {
+		v = resultado_busca_dfs[v].prox;
 		printf("%i -> ", v);
+	} while (v != destino);
 
 	printf("/\n");
 
