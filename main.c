@@ -8,7 +8,6 @@
 /*  CABECALHOS  */
 #include <stdio.h>
 #include <stdlib.h>
-#include "fila.h"
 #include "lista.h"
 
 /*  CODIGOS DE ERRO */

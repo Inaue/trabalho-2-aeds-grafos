@@ -1,8 +1,8 @@
 
 all: busca
 
-busca: main.o lista.o fila.o
-	gcc -o busca main.o lista.o fila.o
+busca: main.o lista.o
+	gcc -o busca main.o lista.o
 
 main.o: main.c lista.h fila.h
 	gcc -c main.c
