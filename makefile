@@ -10,9 +10,6 @@ main.o: main.c lista.h fila.h
 lista.o: lista.c lista.h
 	gcc -c lista.c
 
-fila.o: fila.c fila.h
-	gcc -c fila.c
-
 clean:
 	rm -rf *.o busca
 
