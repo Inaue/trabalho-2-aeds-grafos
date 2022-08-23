@@ -44,17 +44,24 @@ void	grafo_ini_busca		(Info_dfs* resultado, int total_vertices, int v_destino)
 {
 	int v;
 
-	resultado[v_destino].chega_no_destino	= VERDADEIRO;
-	resultado[v_destino].distancia		= 0;
-
 	for (v = 0; v < total_vertices; v++)
-		resultado[v].visitado = FALSO;
+	{
+		resultado[v].visitado			= FALSO;
+		resultado[v].chega_no_destino		= FALSO;
+	}
+	
+	resultado[v_destino].distancia		= 0;
+	resultado[v_destino].chega_no_destino	= VERDADEIRO;
 }
 
 void	grafo_maior_caminho	(Lista** grafo, int v_visitar, int limite_passos, Info_dfs* resultado)
 {
 	int maior_distancia = DIST_PADRAO;
 	Lista* v_adj;
+
+	if (	resultado[v_visitar].chega_no_destino &&
+		(resultado[v_visitar].distancia == 0)	)
+		return;
 
 	resultado[v_visitar].visitado = VERDADEIRO;
 
@@ -73,7 +80,10 @@ void	grafo_maior_caminho	(Lista** grafo, int v_visitar, int limite_passos, Info_
 		}
 	}
 
-	resultado[v_visitar].distancia = maior_distancia + 1;
+	if (resultado[v_visitar].chega_no_destino)
+		resultado[v_visitar].distancia	= maior_distancia + 1;
+	else
+		resultado[v_visitar].visitado	= FALSO;
 }
 
 void	lst_print	(Lista* lst_imprimir)
