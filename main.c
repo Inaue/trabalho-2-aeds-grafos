@@ -1,8 +1,8 @@
 /**
  * @file   main.c
  * @brief  
- * @author Inaue Ferreira da Silva, 
- * @date   07-10-2022
+ * @author Bernardo de Oliveira Silva, Inaue Ferreira da Silva, Nicolle Taila de Oliveira, Vitoria Ellen de Honorio
+ * @date   08-23-2022
  */
 
 /*  CABECALHOS  */
