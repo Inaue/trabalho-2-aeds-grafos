@@ -24,6 +24,7 @@
 /*	ESTRUTURAS	*/
 struct Info_dfs {
 	int visitado;
+	int explorando;
 	int chega_no_destino;
 	int distancia;
 	int prox;
@@ -47,6 +48,7 @@ void	grafo_ini_busca		(Info_dfs* resultado, int total_vertices, int v_destino)
 	for (v = 0; v < total_vertices; v++)
 	{
 		resultado[v].visitado			= FALSO;
+		resultado[v].explorando			= FALSO;
 		resultado[v].chega_no_destino		= FALSO;
 	}
 	
@@ -63,14 +65,16 @@ void	grafo_maior_caminho	(Lista** grafo, int v_visitar, int limite_passos, Info_
 		(resultado[v_visitar].distancia == 0)	)
 		return;
 
-	resultado[v_visitar].visitado = VERDADEIRO;
+	resultado[v_visitar].visitado	= VERDADEIRO;
+	resultado[v_visitar].explorando	= VERDADEIRO;
 
 	for (v_adj = grafo[v_visitar]; v_adj != NULL; v_adj = v_adj->prox)
 	{
 		if (!resultado[v_adj->info].visitado)
 			grafo_maior_caminho(grafo, v_adj->info, limite_passos - 1, resultado);
 
-		if (	(resultado[v_adj->info].chega_no_destino) &&
+		if (	!resultado[v_adj->info].explorando &&
+			(resultado[v_adj->info].chega_no_destino) &&
 			(resultado[v_adj->info].distancia > maior_distancia) &&
 			((resultado[v_adj->info].distancia + 1) < limite_passos)	)
 		{
@@ -79,6 +83,8 @@ void	grafo_maior_caminho	(Lista** grafo, int v_visitar, int limite_passos, Info_
 			resultado[v_visitar].prox		= v_adj->info;
 		}
 	}
+
+	resultado[v_visitar].explorando	= FALSO;
 
 	if (resultado[v_visitar].chega_no_destino)
 		resultado[v_visitar].distancia	= maior_distancia + 1;
