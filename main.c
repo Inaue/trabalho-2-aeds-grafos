@@ -23,11 +23,10 @@
 
 /*	ESTRUTURAS	*/
 struct Info_dfs {
-	int visitado;
-	int explorando;
-	int chega_no_destino;
-	int distancia;
-	int prox;
+    int explorando;
+    int chega_no_destino;
+    int distancia;
+    int prox;
 };
 typedef struct Info_dfs Info_dfs;
 
@@ -41,55 +40,50 @@ void	lst_print		(Lista* lst_imprimir);
 
 /*  *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   *   */
 
-void	grafo_ini_busca		(Info_dfs* resultado, int total_vertices, int v_destino)
+void    grafo_ini_busca     (Info_dfs* resultado, int total_vertices, int v_destino)
 {
-	int v;
+    int v;
 
-	for (v = 0; v < total_vertices; v++)
-	{
-		resultado[v].visitado			= FALSO;
-		resultado[v].explorando			= FALSO;
-		resultado[v].chega_no_destino		= FALSO;
-	}
-	
-	resultado[v_destino].distancia		= 0;
-	resultado[v_destino].chega_no_destino	= VERDADEIRO;
+    for (v = 0; v < total_vertices; v++)
+    {
+        resultado[v].explorando         = FALSO;
+        resultado[v].chega_no_destino       = FALSO;
+    }
+    
+    resultado[v_destino].distancia      = 0;
+    resultado[v_destino].chega_no_destino   = VERDADEIRO;
 }
 
-void	grafo_maior_caminho	(Lista** grafo, int v_visitar, int limite_passos, Info_dfs* resultado)
+void    grafo_maior_caminho (Lista** grafo, int v_visitar, int limite_passos, Info_dfs* resultado)
 {
-	int maior_distancia = DIST_PADRAO;
-	Lista* v_adj;
+    int maior_distancia = DIST_PADRAO;
+    Lista* v_adj;
 
-	if (	resultado[v_visitar].chega_no_destino &&
-		(resultado[v_visitar].distancia == 0)	)
-		return;
+    if ((resultado[v_visitar].chega_no_destino) && (resultado[v_visitar].distancia == 0))
+        return;
 
-	resultado[v_visitar].visitado	= VERDADEIRO;
-	resultado[v_visitar].explorando	= VERDADEIRO;
+    resultado[v_visitar].explorando = VERDADEIRO;
 
-	for (v_adj = grafo[v_visitar]; v_adj != NULL; v_adj = v_adj->prox)
-	{
-		if (!resultado[v_adj->info].visitado)
-			grafo_maior_caminho(grafo, v_adj->info, limite_passos - 1, resultado);
+    for (v_adj = grafo[v_visitar]; v_adj != NULL; v_adj = v_adj->prox)
+    {
+        if (!resultado[v_adj->info].explorando)
+            grafo_maior_caminho(grafo, v_adj->info, limite_passos - 1, resultado);
 
-		if (	!resultado[v_adj->info].explorando &&
-			(resultado[v_adj->info].chega_no_destino) &&
-			(resultado[v_adj->info].distancia > maior_distancia) &&
-			((resultado[v_adj->info].distancia + 1) < limite_passos)	)
-		{
-			resultado[v_visitar].chega_no_destino	= VERDADEIRO;
-			maior_distancia				= resultado[v_adj->info].distancia;
-			resultado[v_visitar].prox		= v_adj->info;
-		}
-	}
+        if (    !resultado[v_adj->info].explorando && //Se nao esta sendo explorado
+            (resultado[v_adj->info].chega_no_destino) && //Se existe um caminho pro destino
+            (resultado[v_adj->info].distancia > maior_distancia) && //Se a distancia for maior q a armazenada atualmente
+            ((resultado[v_adj->info].distancia + 1) < limite_passos)    ) //Se estiver dentro do limite
+        {
+            resultado[v_visitar].chega_no_destino   = VERDADEIRO;
+            maior_distancia             = resultado[v_adj->info].distancia;
+            resultado[v_visitar].prox       = v_adj->info;
+        }
+    }
 
-	resultado[v_visitar].explorando	= FALSO;
+    resultado[v_visitar].explorando = FALSO;
 
-	if (resultado[v_visitar].chega_no_destino)
-		resultado[v_visitar].distancia	= maior_distancia + 1;
-	else
-		resultado[v_visitar].visitado	= FALSO;
+    if (resultado[v_visitar].chega_no_destino)
+        resultado[v_visitar].distancia  = maior_distancia + 1;
 }
 
 void	lst_print	(Lista* lst_imprimir)
