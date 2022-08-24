@@ -18,17 +18,10 @@
 /*	CONSTANTES	*/
 #define VERDADEIRO	(1 == 1)
 #define FALSO		!VERDADEIRO
-#define COMECO_BUSCA	0
-#define FIM_BUSCA	1
-#define NAO_PREENCHIDO	-1
 #define DIST_PADRAO	-1
-#define SUCESSO 0
-#define MAX_RAND 2
-#define MIN 3
-#define MAX 10
-#define AGORA 0
-#define SIM 1
-#define ERRO -42
+#define MAX_RAND 	2
+#define SIM 		1
+#define ERRO 		-42
 
 /*	ESTRUTURAS	*/
 struct Info_dfs {
