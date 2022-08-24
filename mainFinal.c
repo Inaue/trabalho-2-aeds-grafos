@@ -185,9 +185,15 @@ int problemaResolve()
 	v = origem;
 	printf("%i -> ", v);
 	
+		
 	do {
+        if(resultado_busca_dfs[v].prox == resultado_busca_dfs[v+1].prox){
+            printf(" -- Não existe caminho disponivel -- ");
+            v = destino;
+        }else{
 		v = resultado_busca_dfs[v].prox;
 		printf("%i -> ", v);
+        }
 	} while (v != destino);
 
 	printf("/\n");
