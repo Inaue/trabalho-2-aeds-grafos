@@ -169,6 +169,7 @@ int problemaResolve()
 	scanf("%i", &destino);
 	printf("Digite o limite de passos:\n");
 	scanf("%i", &limite);
+	limite++;
 	srand(seed);
 	grafo = (Lista**)malloc(vertices * sizeof(Lista*));
 	resultado_busca_dfs = (Info_dfs*)malloc(vertices * sizeof(Info_dfs));
