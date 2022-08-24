@@ -1,14 +1,16 @@
 /**
  * @file   main.c
  * @brief  
- * @author Bernardo de Oliveira Silva, Inaue Ferreira da Silva, Nicolle Taila de Oliveira, Vitoria Ellen de Honorio
+ * @author Bernardo de Oliveira Silva, Inaue Ferreira da Silva, Nicolle Taila de Oliveira, Vitoria Ellen Honorio
  * @date   08-23-2022
  */
 
 /*  CABECALHOS  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "lista.h"
+
 
 /*  CODIGOS DE ERRO */
 #define EXECUTADO_COM_EXITO     0
@@ -16,10 +18,10 @@
 /*	CONSTANTES	*/
 #define VERDADEIRO	(1 == 1)
 #define FALSO		!VERDADEIRO
-#define COMECO_BUSCA	0
-#define FIM_BUSCA	1
-#define NAO_PREENCHIDO	-1
 #define DIST_PADRAO	-1
+#define MAX_RAND 	2
+#define SIM 		1
+#define ERRO 		-42
 
 /*	ESTRUTURAS	*/
 struct Info_dfs {
@@ -100,14 +102,49 @@ void	lst_print	(Lista* lst_imprimir)
 
 }
 
-/**
- * @brief FUNCAO PRINCIPAL
- *
- * @param argc NUMERO DE ARGUMENTOS
- * @param argv ARGUMENTOS
- * @return int CODIGO DE ERRO
- */
-int main(int argc, char** argv)
+Lista **criaGrafo(Lista **grafoBusca, int numVertices){//Função já pra criar o grafo aleatório
+
+    int comparador, comparador2, valorBinario;
+
+    for (comparador = 0; comparador < numVertices; comparador++){
+
+        grafoBusca[comparador] = lst_cria();
+
+    }
+
+    for (comparador = 0; comparador < numVertices; comparador++){
+
+        for (comparador2 = 0; comparador2 < numVertices; comparador2++){
+            
+            valorBinario = rand() % MAX_RAND;
+
+            if (valorBinario == SIM){
+
+                grafoBusca[comparador]= lst_insere(grafoBusca[comparador], comparador2);
+
+            }
+
+        }
+
+    }    
+
+    return grafoBusca;
+}
+
+void liberaGrafo(Lista **grafoBusca, int numVertices){//Função pra liberar o grafo criado
+
+    int comparador;
+
+    for (comparador = 0; comparador < numVertices; comparador++){
+
+        lst_libera(grafoBusca[comparador]);
+
+    }
+
+    free(grafoBusca);
+}
+
+int problemaResolve()
 {
 	Lista** grafo;
 	Info_dfs* resultado_busca_dfs;
@@ -125,21 +162,12 @@ int main(int argc, char** argv)
 	scanf("%i", &destino);
 	printf("Digite o limite de passos:\n");
 	scanf("%i", &limite);
+	limite++;
 	srand(seed);
 	grafo = (Lista**)malloc(vertices * sizeof(Lista*));
 	resultado_busca_dfs = (Info_dfs*)malloc(vertices * sizeof(Info_dfs));
 
-	for (v = 0; v < vertices; v++)
-		grafo[v] = lst_cria();
-	
-	for (v1 = 0; v1 < vertices; v1++)
-	{
-		for (v2 = 0; v2 < vertices; v2++)
-		{
-			if ((rand() % 2) == 1)
-				grafo[v1] = lst_insere(grafo[v1], v2);
-		}
-	}
+	criaGrafo(grafo, vertices);
 
 	printf("____________________________________________________________\n");
 	printf("GRAFO RESULTANTE:\n");
@@ -157,15 +185,75 @@ int main(int argc, char** argv)
 	v = origem;
 	printf("%i -> ", v);
 	
-	do {
-		v = resultado_busca_dfs[v].prox;
-		printf("%i -> ", v);
-	} while (v != destino);
+	if (resultado_busca_dfs[v].chega_no_destino){
+        do {
+            v = resultado_busca_dfs[v].prox;
+            printf("%i -> ", v);
+        } while (v != destino);
+        printf("/\n");
+    }
+    else
+        printf("-- Nao existe caminho disponivel --\n");
 
-	printf("/\n");
-
-	free(grafo);
+	liberaGrafo(grafo, vertices);
 	free(resultado_busca_dfs);
 
 	return EXECUTADO_COM_EXITO;
 }
+
+/**
+ * @brief FUNCAO PRINCIPAL
+ *
+ * @param argc NUMERO DE ARGUMENTOS
+ * @param argv ARGUMENTOS
+ * @return int CODIGO DE ERRO
+ */
+
+ int main(int argc, char** argv){
+
+	int escolha, repetir, inicia;
+
+    do {
+        
+        printf("Fuga da Terra\n");
+        printf("\n");
+        printf("\t1- Iniciar\n");
+        printf("\t2- Informações\n");
+        printf("\t3- Creditos\n");
+        printf("\t4- Sair\n");
+        printf("\n> ");
+
+        scanf("%d", &escolha);
+
+        switch(escolha){
+        case 1:
+            inicia = problemaResolve();
+            break;
+        case 2:
+            printf("\nA Terra esta prestes a ser destruida por uma raça alienigena burocrata, os Vogons.\nPorem, devido a burocracia, eles devem demorar a destruir o planeta, dando tempo de voce pegar a nave mais proxima para fugir. \nComo voce eh uma pessoa legal, vai tentar salvar o maximo de pessoas que conseguir.\nSeu objetivo eh passar no maior numero de casas possivel para tentar levar o maximo de pessoas ate o local da fuga, antes que os Vogons cheguem.\n");
+            break;
+        case 3:
+            printf("\nTrabalho de Algoritimos e Estruturas de Dados\n");
+            printf("Tema 42: \"Ate Logo e Obrigado Pelos Peixes\"\n");
+            printf("Feito por:\n\n");
+            printf("- Bernardo de Oliveira Silva;\n- Inaue Ferreira da Silva;\n- Nicolle Taila de Oliveira;\n- Vitoria Ellen Honorio;\n\n");
+            break;
+        case 4:
+            printf("\nSaindo...\n");
+            return EXECUTADO_COM_EXITO;
+            break;
+        default:
+            fputs("Houve um erro.\n", stderr);
+            return ERRO;
+            break;
+        }
+
+        printf("\nDeseja repetir o processo?\n1- Sim\n2- Nao\n> ");
+        scanf("%d", &repetir);
+
+    } while (repetir == SIM);
+
+    printf("\nSaindo...\n");
+
+	return EXECUTADO_COM_EXITO;
+ }
